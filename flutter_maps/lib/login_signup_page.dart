@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+
 class LoginSignUpPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => new _LoginSignUpPageState();
@@ -52,11 +53,11 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
     return new Hero(
       tag: 'hero',
       child: Padding(
-        padding: EdgeInsets.fromLTRB(0.0, 70.0, 0.0, 0.0),
+        padding: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
         child: CircleAvatar(
-          backgroundColor: Colors.transparent,
-          radius: 48.0,
-          child: Image.asset('assets/flutter-icon.png'),
+          backgroundColor: Colors.red,
+          radius: 80.0,
+          child: Image.asset('assets/images/pp.jpg'),
         ),
       ),
     );
@@ -111,9 +112,10 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
           child: _formMode == FormMode.LOGIN
               ? new Text("Login",
                   style: new TextStyle(fontSize: 20.0, color: Colors.white))
-              : new Text('Login',
+              : new Text('SignUp',
                   style: new TextStyle(fontSize: 20.0, color: Colors.white)),
-          onPressed: _validateAndSubmit,
+          //onPressed: _validateAndSubmit,
+          onPressed: _abc,
         ));
   }
 
@@ -146,7 +148,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
       _formMode = FormMode.LOGIN;
     });
   }
-
+/*
   Widget _showErrorMessage() {
     if (_errorMessage.length > 0 && _errorMessage != null) {
       return new Text(
@@ -162,7 +164,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         height: 0.0,
       );
     }
-  }
+  }*/
 
   Widget _showBody() {
     return new Container(
@@ -177,11 +179,13 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
               _showPasswordInput(),
               _showPrimaryButton(),
               _showSecondaryButton(),
-              _showErrorMessage(),
+              //_showErrorMessage(),
             ],
           ),
         ));
   }
 
-
+  String _abc(){
+    return ("abc");
+  }
 }
