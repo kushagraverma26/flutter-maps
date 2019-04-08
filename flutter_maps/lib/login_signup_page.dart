@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_maps/authentication.dart';
 
 class LoginSignUpPage extends StatefulWidget {
+
+  LoginSignUpPage({this.auth, this.onSignedIn});
+
+  final BaseAuth auth;
+  final VoidCallback onSignedIn;
+
+ 
   @override
   State<StatefulWidget> createState() => new _LoginSignUpPageState();
 }
@@ -20,11 +28,12 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
 
   // Initial form is login form
   FormMode _formMode = FormMode.LOGIN;
-  //bool _isIos;
+  bool _isIos;
   bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
+    _isIos = Theme.of(context).platform == TargetPlatform.iOS;
     return new Scaffold(
         appBar: new AppBar(
           title: new Text("Login"),
@@ -55,9 +64,10 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
       child: Padding(
         padding: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
         child: CircleAvatar(
-          backgroundColor: Colors.red,
+          backgroundColor: Colors.transparent,
           radius: 80.0,
-          child: Image.asset('assets/images/pp.jpg'),
+          child: _formMode == FormMode.LOGIN ? Image.asset('assets/images/pp1.jpeg')
+            : Image.asset('assets/images/pp2.jpeg'),
         ),
       ),
     );
@@ -114,8 +124,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
                   style: new TextStyle(fontSize: 20.0, color: Colors.white))
               : new Text('SignUp',
                   style: new TextStyle(fontSize: 20.0, color: Colors.white)),
-          //onPressed: _validateAndSubmit,
-          onPressed: _abc,
+          onPressed: _validateAndSubmit,
         ));
   }
 
@@ -123,7 +132,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
     return FlatButton(
       child: _formMode == FormMode.LOGIN
           ? new Text('Create an account',
-              style: new TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300))
+              style: new TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500))
           : new Text('Have an account? Sign in',
               style:
                   new TextStyle(fontSize: 18.0, fontWeight: FontWeight.w300)),
@@ -148,9 +157,19 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
       _formMode = FormMode.LOGIN;
     });
   }
-/*
+
+  
+  // Check if form is valid before perform login or signup
+  bool _validateAndSave() {
+    final form = _formKey.currentState;
+    if (form.validate()) {
+      form.save();
+      return true;
+    }
+    return false;
+}
   Widget _showErrorMessage() {
-    if (_errorMessage.length > 0 && _errorMessage != null) {
+    if (_errorMessage != null && _errorMessage.length > 0) {
       return new Text(
         _errorMessage,
         style: TextStyle(
@@ -164,7 +183,7 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         height: 0.0,
       );
     }
-  }*/
+  }
 
   Widget _showBody() {
     return new Container(
@@ -179,13 +198,43 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
               _showPasswordInput(),
               _showPrimaryButton(),
               _showSecondaryButton(),
-              //_showErrorMessage(),
+              _showErrorMessage(),
             ],
           ),
         ));
   }
 
-  String _abc(){
-    return ("abc");
+
+  _validateAndSubmit() async {
+  setState(() {
+    _errorMessage = "";
+    _isLoading = true;
+  });
+  if (_validateAndSave()) {
+    String userId = "";
+    try {
+      if (_formMode == FormMode.LOGIN) {
+        userId = await widget.auth.signIn(_email, _password);
+        print('Signed in: $userId');
+      } else {
+        userId = await widget.auth.signUp(_email, _password);
+        print('Signed up user: $userId');
+      }
+      if (userId.length > 0 && userId != null) {
+        widget.onSignedIn();
+      }
+    } catch (e) {
+      print('Error: $e');
+      setState(() {
+        _isLoading = false;
+        if (_isIos) {
+          _errorMessage = e.details;
+        } else
+          _errorMessage = e.message;
+      });
+    }
   }
+}
+
+
 }
