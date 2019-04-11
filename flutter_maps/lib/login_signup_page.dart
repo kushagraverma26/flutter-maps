@@ -3,13 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_maps/authentication.dart';
 
 class LoginSignUpPage extends StatefulWidget {
-
-  LoginSignUpPage({this.auth, this.onSignedIn});
-
   final BaseAuth auth;
   final VoidCallback onSignedIn;
 
- 
+  LoginSignUpPage({this.auth, this.onSignedIn});
+
   @override
   State<StatefulWidget> createState() => new _LoginSignUpPageState();
 }
@@ -66,8 +64,9 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         child: CircleAvatar(
           backgroundColor: Colors.transparent,
           radius: 80.0,
-          child: _formMode == FormMode.LOGIN ? Image.asset('assets/images/pp1.jpeg')
-            : Image.asset('assets/images/pp2.jpeg'),
+          child: _formMode == FormMode.LOGIN
+              ? Image.asset('assets/images/pp1.jpeg')
+              : Image.asset('assets/images/pp2.jpeg'),
         ),
       ),
     );
@@ -158,7 +157,6 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
     });
   }
 
-  
   // Check if form is valid before perform login or signup
   bool _validateAndSave() {
     final form = _formKey.currentState;
@@ -167,7 +165,8 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
       return true;
     }
     return false;
-}
+  }
+
   Widget _showErrorMessage() {
     if (_errorMessage != null && _errorMessage.length > 0) {
       return new Text(
@@ -204,37 +203,35 @@ class _LoginSignUpPageState extends State<LoginSignUpPage> {
         ));
   }
 
-
   _validateAndSubmit() async {
-  setState(() {
-    _errorMessage = "";
-    _isLoading = true;
-  });
-  if (_validateAndSave()) {
-    String userId = "";
-    try {
-      if (_formMode == FormMode.LOGIN) {
-        userId = await widget.auth.signIn(_email, _password);
-        print('Signed in: $userId');
-      } else {
-        userId = await widget.auth.signUp(_email, _password);
-        print('Signed up user: $userId');
+    setState(() {
+      _errorMessage = "";
+      _isLoading = true;
+    });
+    if (_validateAndSave()) {
+      String userId = "";
+      try {
+        if (_formMode == FormMode.LOGIN) {
+          userId = await widget.auth.signIn(_email, _password);
+          print('Signed in: $userId');
+        } else {
+          userId = await widget.auth.signUp(_email, _password);
+          print('Signed up user: $userId');
+        }
+        if (userId != null && userId.length > 0) {
+          print("FGD");
+          widget.user.onSignedIn();
+        }
+      } catch (e) {
+        print('Error: $e');
+        setState(() {
+          _isLoading = false;
+          if (_isIos) {
+            _errorMessage = e.details;
+          } else
+            _errorMessage = e.message;
+        });
       }
-      if (userId.length > 0 && userId != null) {
-        widget.onSignedIn();
-      }
-    } catch (e) {
-      print('Error: $e');
-      setState(() {
-        _isLoading = false;
-        if (_isIos) {
-          _errorMessage = e.details;
-        } else
-          _errorMessage = e.message;
-      });
     }
   }
-}
-
-
 }
