@@ -1,17 +1,33 @@
 buildscript {
     repositories {
         google()
-        jcenter { url "http://jcenter.bintray.com/"}
+        jcenter()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.0'
-	    classpath 'com.google.gms:google-services:4.2.0'
-
+        classpath 'com.android.tools.build:gradle:3.2.1'
+        classpath 'com.google.gms:google-services:3.2.1'
+        //compile 'com.android.tools.build:gradle:3.2.1'
+        //compile 'com.google.gms:google-services:3.2.1'
     }
 }
 
+// allprojects {
+//     repositories {
+//         google()
+//         jcenter()
+//     }
+// }
+
 allprojects {
+/*        configurations.all {
+        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+            def requested = details.requested
+            if (requested.group == 'com.google.firebase') {
+                details.useVersion "15.+"
+            }
+        }
+    }*/
     repositories {
         google()
         jcenter()
@@ -29,3 +45,16 @@ subprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+/*
+subprojects {
+    project.configurations.all {
+        resolutionStrategy.eachDependency { details ->
+            if (details.requested.group == 'com.android.support'
+                    && !details.requested.name.contains('multidex') ) {
+                details.useVersion "26.1.0"
+            }
+        }
+    }
+}
+
+*/
